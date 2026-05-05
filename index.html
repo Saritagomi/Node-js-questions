@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Node.js Interview Mastery Guide</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0e27;
+            --bg-secondary: #1a1f3a;
+            --accent-cyan: #00fff7;
+            --accent-pink: #ff2a6d;
+            --accent-yellow: #ffd700;
+            --text-primary: #e8eaf6;
+            --text-secondary: #b0b8d4;
+            --glass-bg: rgba(26, 31, 58, 0.7);
+            --glass-border: rgba(0, 255, 247, 0.2);
+        }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 255, 247, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 42, 109, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(255, 215, 0, 0.05) 0%, transparent 50%);
+            animation: bgShift 20s ease infinite;
+        }
+
+        @keyframes bgShift {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(50px, 30px) scale(1.1); }
+        }
+
+        /* Grid Pattern Overlay */
+        .grid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image: 
+                linear-gradient(rgba(0, 255, 247, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 247, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 30s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 50px 50px; }
+        }
+
+        /* Watermark */
+        .watermark {
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            font-size: 0.75rem;
+            color: rgba(0, 255, 247, 0.2);
+            font-weight: 600;
+            letter-spacing: 2px;
+            z-index: 1000;
+            text-transform: uppercase;
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 0.4; }
+        }
+
+        /* Header */
+        header {
+            padding: 3rem 2rem 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2rem, 6vw, 4.5rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-pink), var(--accent-yellow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            animation: titleGlow 3s ease-in-out infinite;
+            text-shadow: 0 0 30px rgba(0, 255, 247, 0.3);
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { filter: brightness(1) drop-shadow(0 0 20px rgba(0, 255, 247, 0.3)); }
+            50% { filter: brightness(1.2) drop-shadow(0 0 40px rgba(255, 42, 109, 0.4)); }
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+            margin-bottom: 2rem;
+        }
+
+        /* Search Bar */
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto 3rem;
+            padding: 0 2rem;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            background: var(--glass-bg);
+            border: 2px solid var(--glass-border);
+            border-radius: 50px;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .search-box:focus {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 30px rgba(0, 255, 247, 0.3);
+        }
+
+        .search-box::placeholder {
+            color: var(--text-secondary);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+        }
+
+        /* Question Cards */
+        .question-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .question-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--accent-cyan), var(--accent-pink));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .question-card:hover {
+            border-color: var(--accent-cyan);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(0, 255, 247, 0.2);
+        }
+
+        .question-card:hover::before {
+            opacity: 1;
+        }
+
+        .question-card.active {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 10px 40px rgba(0, 255, 247, 0.3);
+        }
+
+        .question-card.active::before {
+            opacity: 1;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .question-number {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-pink));
+            color: var(--bg-primary);
+            font-weight: 700;
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent-cyan);
+            flex: 1;
+            line-height: 1.6;
+        }
+
+        .expand-icon {
+            color: var(--accent-pink);
+            font-size: 1.5rem;
+            transition: transform 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .question-card.active .expand-icon {
+            transform: rotate(180deg);
+        }
+
+        .answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+            margin-top: 0;
+        }
+
+        .question-card.active .answer {
+            max-height: 3000px;
+            margin-top: 1.5rem;
+        }
+
+        .answer-content {
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(0, 255, 247, 0.2);
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .answer-content p {
+            margin-bottom: 1rem;
+        }
+
+        .answer-content strong {
+            color: var(--accent-yellow);
+            font-weight: 600;
+        }
+
+        .answer-content ul {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .answer-content li {
+            margin-bottom: 0.5rem;
+            position: relative;
+        }
+
+        .answer-content li::marker {
+            color: var(--accent-cyan);
+        }
+
+        .code-inline {
+            background: rgba(0, 255, 247, 0.1);
+            color: var(--accent-cyan);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        .pros-cons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .pros, .cons {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 1rem;
+            border-radius: 10px;
+            border: 1px solid;
+        }
+
+        .pros {
+            border-color: rgba(0, 255, 0, 0.3);
+        }
+
+        .cons {
+            border-color: rgba(255, 42, 109, 0.3);
+        }
+
+        .pros h4, .cons h4 {
+            font-size: 0.95rem;
+            margin-bottom: 0.8rem;
+            font-weight: 700;
+        }
+
+        .pros h4 {
+            color: #00ff88;
+        }
+
+        .cons h4 {
+            color: var(--accent-pink);
+        }
+
+        /* Category Filters */
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            justify-content: center;
+            margin-bottom: 3rem;
+            padding: 0 2rem;
+        }
+
+        .filter-btn {
+            padding: 0.6rem 1.2rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 25px;
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-pink));
+            color: var(--bg-primary);
+            border-color: transparent;
+            font-weight: 600;
+        }
+
+        /* Scroll to Top */
+        .scroll-top {
+            position: fixed;
+            bottom: 80px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-pink));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(100px);
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .scroll-top.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .scroll-top:hover {
+            box-shadow: 0 0 30px rgba(0, 255, 247, 0.5);
+            transform: translateY(-5px);
+        }
+
+        .scroll-top::before {
+            content: '↑';
+            font-size: 1.5rem;
+            color: var(--bg-primary);
+            font-weight: 700;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2rem;
+            }
+
+            .question-card {
+                padding: 1.5rem;
+            }
+
+            .question-number {
+                font-size: 0.75rem;
+                padding: 0.3rem 0.6rem;
+            }
+
+            .question-text {
+                font-size: 1rem;
+            }
+
+            .watermark {
+                bottom: 10px;
+                right: 15px;
+                font-size: 0.65rem;
+            }
+
+            .scroll-top {
+                bottom: 60px;
+                right: 15px;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 3rem;
+            color: var(--accent-cyan);
+            font-size: 1.2rem;
+        }
+
+        .spinner {
+            border: 3px solid rgba(0, 255, 247, 0.2);
+            border-top: 3px solid var(--accent-cyan);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    <div class="grid-overlay"></div>
+    <div class="watermark">Sarita Gomi</div>
+
+    <header>
+        <h1 class="title">Node.js Interview Mastery</h1>
+        <p class="subtitle">Complete Guide with Interview-Ready Answers</p>
+    </header>
+
+    <div class="search-container">
+        <input type="text" class="search-box" placeholder="🔍 Search questions..." id="searchInput">
+    </div>
+
+    <div class="filters">
+        <button class="filter-btn active" data-category="all">All Topics</button>
+        <button class="filter-btn" data-category="core">Core Concepts</button>
+        <button class="filter-btn" data-category="performance">Performance</button>
+        <button class="filter-btn" data-category="security">Security</button>
+        <button class="filter-btn" data-category="database">Database</button>
+        <button class="filter-btn" data-category="architecture">Architecture</button>
+    </div>
+
+    <div class="container" id="questionsContainer">
+        <div class="loading">
+            <div class="spinner"></div>
+            Loading questions...
+        </div>
+    </div>
+
+    <div class="scroll-top" id="scrollTop"></div>
+
+    <script>
+        const questions = [
+            {
+                id: 1,
+                category: 'core',
+                question: 'What is Node.js?',
+                answer: `<p><strong>Node.js</strong> is a runtime environment that allows you to run JavaScript on the server-side, outside the browser.</p>
+                <p><strong>Key Points:</strong></p>
+                <ul>
+                    <li>Built on Chrome's V8 JavaScript engine</li>
+                    <li>Event-driven, non-blocking I/O model makes it lightweight and efficient</li>
+                    <li>Uses JavaScript for both frontend and backend</li>
+                    <li>Perfect for I/O-intensive applications (real-time apps, APIs, microservices)</li>
+                    <li>Single-threaded but handles concurrency through event loop</li>
+                </ul>
+                <p><strong>Interview Tip:</strong> Emphasize that Node.js is NOT a language or framework—it's a runtime environment.</p>`
+            },
+            {
+                id: 2,
+                category: 'core',
+                question: 'What is the Event Loop?',
+                answer: `<p>The <strong>Event Loop</strong> is the mechanism that allows Node.js to perform non-blocking I/O operations despite JavaScript being single-threaded.</p>
+                <p><strong>How it works:</strong></p>
+                <ul>
+                    <li><strong>Call Stack:</strong> Executes synchronous code</li>
+                    <li><strong>Node APIs:</strong> Handle async operations (timers, I/O, etc.)</li>
+                    <li><strong>Callback Queue:</strong> Holds callbacks from completed async operations</li>
+                    <li><strong>Event Loop:</strong> Moves callbacks from queue to call stack when stack is empty</li>
+                </ul>
+                <p><strong>Phases:</strong> Timers → Pending Callbacks → Idle/Prepare → Poll → Check → Close Callbacks</p>
+                <p><strong>Interview Tip:</strong> Explain that the event loop enables Node.js to handle thousands of concurrent connections without blocking.</p>`
+            },
+            {
+                id: 3,
+                category: 'core',
+                question: 'What is setImmediate, and what is the difference between setImmediate and setInterval?',
+                answer: `<p><strong>setImmediate:</strong> Executes a callback <em>once</em> in the next iteration of the event loop (check phase).</p>
+                <p><strong>setInterval:</strong> Executes a callback <em>repeatedly</em> at specified time intervals.</p>
+                <p><strong>Key Differences:</strong></p>
+                <ul>
+                    <li><code class="code-inline">setImmediate()</code> runs once, immediately after I/O events</li>
+                    <li><code class="code-inline">setInterval()</code> runs repeatedly at fixed intervals</li>
+                    <li>setImmediate is unique to Node.js; setInterval exists in browsers too</li>
+                    <li>setImmediate has higher priority than <code class="code-inline">setTimeout(fn, 0)</code> in I/O cycles</li>
+                </ul>
+                <p><strong>Interview Tip:</strong> Mention that <code class="code-inline">process.nextTick()</code> has even higher priority than setImmediate.</p>`
+            },
+            {
+                id: 4,
+                category: 'core',
+                question: 'What is libuv, and how is it different from Node.js?',
+                answer: `<p><strong>libuv</strong> is a C library that provides the event loop and asynchronous I/O capabilities to Node.js.</p>
+                <p><strong>Relationship:</strong></p>
+                <ul>
+                    <li>Node.js = V8 Engine (JavaScript execution) + libuv (async I/O) + C++ bindings</li>
+                    <li>libuv handles thread pool, file system operations, networking, timers</li>
+                    <li>Provides cross-platform async I/O (works on Windows, Linux, macOS)</li>
+                </ul>
+                <p><strong>Key Features of libuv:</strong></p>
+                <ul>
+                    <li>Event loop implementation</li>
+                    <li>Thread pool (default 4 threads) for CPU-intensive tasks</li>
+                    <li>Async DNS, TCP, UDP operations</li>
+                    <li>File system operations</li>
+                </ul>
+                <p><strong>Interview Tip:</strong> Node.js is the runtime; libuv is the underlying engine that powers its async capabilities.</p>`
+            },
+            {
+                id: 5,
+                category: 'performance',
+                question: 'What is multithreading, and how can it be performed in Node.js?',
+                answer: `<p><strong>Multithreading</strong> means running multiple threads concurrently to perform parallel operations.</p>
+                <p><strong>In Node.js:</strong></p>
+                <ul>
+                    <li>Node.js is single-threaded for JavaScript execution</li>
+                    <li>But libuv's thread pool (default 4 threads) handles I/O operations</li>
+                    <li>For true multithreading: Use <strong>Worker Threads</strong> module</li>
+                </ul>
+                <p><strong>Worker Threads:</strong></p>
+                <ul>
+                    <li>Create separate threads for CPU-intensive tasks</li>
+                    <li>Each worker runs in its own V8 instance</li>
+                    <li>Communicate via message passing</li>
+                    <li>Example: Image processing, video encoding, complex calculations</li>
+                </ul>
+                <p><strong>Interview Tip:</strong> Mention that Worker Threads are for CPU-bound tasks, while the event loop handles I/O-bound tasks efficiently.</p>`
+            },
+            {
+                id: 6,
+                category: 'core',
+                question: 'What are Buffers?',
+                answer: `<p><strong>Buffers</strong> are temporary storage for binary data in Node.js, used when dealing with raw binary data (files, network streams, images).</p>
+                <p><strong>Key Points:</strong></p>
+                <ul>
+                    <li>Fixed-size chunk of memory allocated outside V8 heap</li>
+                    <li>Used for handling binary data (TCP streams, file operations, images)</li>
+                    <li>Created using <code class="code-inline">Buffer.from()</code>, <code class="code-inline">Buffer.alloc()</code></li>
+                    <li>Can convert between Buffer and String using encodings (utf8, base64, hex)</li>
+                </ul>
+                <p><strong>Common Use Cases:</strong></p>
+                <ul>
+                    <li>Reading/writing files</li>
+                    <li>Network communication (TCP/UDP)</li>
+                    <li>Image processing</li>
+                    <li>Cryptographic operations</li>
+                </ul>
+                <p><strong>Interview Tip:</strong> Explain that Buffers are necessary because JavaScript wasn't originally designed to handle binary data.</p>`
+            },
+            {
+                id: 7,
+                category: 'core',
+                question: 'What are Streams?',
+                answer: `<p><strong>Streams</strong> are objects that allow reading or writing data piece by piece (in chunks), instead of loading everything into memory at once.</p>
+                <p><strong>4 Types of Streams:</strong></p>
+                <ul>
+                    <li><strong>Readable:</strong> Read data (e.g., <code class="code-inline">fs.createReadStream()</code>)</li>
+                    <li><strong>Writable:</strong> Write data (e.g., <code class="code-inline">fs.createWriteStream()</code>)</li>
+                    <li><strong>Duplex:</strong> Both read and write (e.g., TCP sockets)</li>
+                    <li><strong>Transform:</strong> Modify data while reading/writing (e.g., compression)</li>
+                </ul>
+                <p><strong>Advantages:</strong></p>
+                <ul>
+                    <li>Memory efficient—process large files without loading entirely</li>
+                    <li>Time efficient—start processing before all data is available</li>
+                    <li>Perfect for video streaming, file uploads, large datasets</li>
+                </ul>
+                <p><strong>Interview Tip:</strong> Use the example: "Streaming Netflix vs downloading the entire movie first."</p>`
+            },
+            {
+                id: 8,
+                category: 'core',
+                question: 'What are Transform Streams?',
+                answer: `<p><strong>Transform Streams</strong> are a type of duplex stream that can modify or transform data as it's being read or written.</p>
+                <p><strong>Characteristics:</strong></p>
+                <ul>
+                    <li>Both readable and writable</li>
+                    <li>Data can be modified during transmission</li>
+                    <li>Common examples: compression (zlib), encryption, data parsing</li>
+                </ul>
+                <p><strong>Real-world Examples:</strong></p>
+                <ul>
+                    <li><strong>zlib.createGzip():</strong> Compress data on-the-fly</li>
+                    <li><strong>crypto streams:</strong> Encrypt/decrypt data</li>
+                    <li><strong>CSV parsers:</strong> Transform CSV to JSON while reading</li>
+                    <li><strong>Custom transforms:</strong> Uppercase text, filter data, etc.</li>
+                </ul>
+                <p><strong>Interview Tip:</strong> Mention that transform streams are powerful for data pipelines where data needs processing between source and destination.</p>`
+            },
+            {
+                id: 9,
+                category: 'performance',
+                question: 'How can you optimize Node.js performance?',
+                answer: `<p><strong>Performance Optimization Strategies:</strong></p>
+                <ul>
+                    <li><strong>Use Clustering:</strong> Leverage multiple CPU cores with cluster module</li>
+                    <li><strong>Implement Caching:</strong> Use Redis/Memcached for frequently accessed data</li>
+                    <li><strong>Optimize Database Queries:</strong> Use indexing, connection pooling, query optimization</li>
+                    <li><strong>Use Worker Threads:</strong> For CPU-intensive tasks</li>
+                    <li><strong>Enable Compression:</strong> Use gzip/brotli for HTTP responses</li>
+                    <li><strong>Async Operations:</strong> Avoid blocking the event loop; use async/await properly</li>
+                    <li><strong>Load Balancing:</strong> Distribute traffic across multiple instances</li>
+                    <li><strong>Code Optimization:</strong> Avoid memory leaks, use efficient algorithms</li>
+                    <li><strong>Use PM2:</strong> Process manager for production with auto-restart, monitoring</li>
+                    <li><strong>HTTP/2:</strong> Enable for better performance over HTTP/1.1</li>
+                </ul>
+                <p><strong>Interview Tip:</strong> Prioritize optimizations based on bottlenecks—profile first, then optimize.</p>`
+            },
+            {
+                id: 10,
+                category: 'performance',
+                question: 'What are Cluster and Worker Threads?',
+                answer: `<p><strong>Cluster Module:</strong></p>
+                <ul>
+                    <li>Creates multiple Node.js processes (workers) to handle requests</li>
+                    <li>Each worker is a separate process running on different CPU cores</li>
+                    <li>Master process distributes incoming connections to workers</li>
+                    <li><strong>Use case:</strong> Scale web servers across multiple cores</li>
+                </ul>
+                <p><strong>Worker Threads Module:</strong></p>
+                <ul>
+                    <li>Creates threads within the same process</li>
+                    <li>Each thread runs JavaScript in parallel</li>
+                    <li>Shares memory with main thread (via SharedArrayBuffer)</li>
+                    <li><strong>Use case:</strong> CPU-intensive tasks (image processing, heavy computations)</li>
+                </ul>
+                <div class="pros-cons">
+                    <div class="pros">
+                        <h4>✓ When to Use Cluster</h4>
+                        <ul>
+                            <li>I/O-bound workloads (APIs, web servers)</li>
+                            <li>Horizontal scaling across cores</li>
+                        </ul>
+                    </div>
+                    <div class="cons">
+                        <h4>✓ When to Use Worker Threads</h4>
+                        <ul>
+                            <li>CPU-bound tasks</li>
+                            <li>Shared memory requirements</li>
+                        </ul>
+                    </div>
+                </div>`
+            },
+            {
+                id: 11,
+                category: 'core',
+                question: 'What is a Process and what is a Thread?',
+                answer: `<p><strong>Process:</strong></p>
+                <ul>
+                    <li>Independent execution unit with its own memory space</li>
+                    <li>Isolated from other processes</li>
+                    <li>Heavier—requires more resources</li>
+                    <li>Inter-process communication (IPC) is complex</li>
+                    <li><strong>Example:</strong> Each Node.js cluster worker is a separate process</li>
+                </ul>
+                <p><strong>Thread:</strong></p>
+                <ul>
+                    <li>Lightweight execution unit within a process</li>
+                    <li>Shares memory space with other threads in the same process</li>
+                    <li>Faster to create and destroy</li>
+                    <li>Communication is easier (shared memory)</li>
+                    <li><strong>Example:</strong> Worker Threads in Node.js</li>
+                </ul>
+                <p><strong>Interview Analogy:</strong> Process = separate house; Thread = rooms in the same house sharing kitchen and bathroom.</p>`
+            },
+            {
+                id: 12,
+                category: 'core',
+                question: 'What are Node.js frameworks, which ones are commonly used, and what do they do?',
+                answer: `<p><strong>Node.js Frameworks</strong> provide structure, routing, middleware, and utilities to build applications faster.</p>
+                <p><strong>Popular Frameworks:</strong></p>
+                <ul>
+                    <li><strong>Express.js:</strong> Minimal, flexible web framework; most popular for REST APIs</li>
+                    <li><strong>Koa.js:</strong> Modern, lightweight; built by Express team; uses async/await</li>
+                    <li><strong>NestJS:</strong> TypeScript-based, modular; follows Angular-like architecture; great for enterprise apps</li>
+                    <li><strong>Fastify:</strong> High-performance framework; faster than Express; built-in validation</li>
+                    <li><strong>Hapi.js:</strong> Configuration-driven; strong plugin ecosystem; used in large-scale apps</li>
+                    <li><strong>Sails.js:</strong> MVC framework; includes ORM (Waterline); good for real-time apps</li>
+                </ul>
+                <p><strong>What they do:</strong> Routing, middleware management, request/response handling, authentication, validation, error handling.</p>
+                <p><strong>Interview Tip:</strong> Express is the most popular, but mention NestJS for TypeScript/enterprise contexts.</p>`
+            },
+            {
+                id: 13,
+                category: 'security',
+                question: 'What is Authentication?',
+                answer: `<p><strong>Authentication</strong> is the process of verifying the identity of a user or system.</p>
+                <p><strong>Common Methods:</strong></p>
+                <ul>
+                    <li><strong>JWT (JSON Web Tokens):</strong> Stateless; token contains user info; used in REST APIs</li>
+                    <li><strong>Session-based:</strong> Server stores session ID; client sends cookie with each request</li>
+                    <li><strong>OAuth 2.0:</strong> Third-party authentication (Google, Facebook login)</li>
+                    <li><strong>Passport.js:</strong> Popular middleware for authentication in Node.js</li>
+                </ul>
+                <p><strong>Authentication vs Authorization:</strong></p>
+                <ul>
+                    <li><strong>Authentication:</strong> "Who are you?" (login)</li>
+                    <li><strong>Authorization:</strong> "What can you do?" (permissions/roles)</li>
+                </ul>
+                <p><strong>Interview Tip:</strong> Always hash passwords (bcrypt), never store plain text; use HTTPS for token transmission.</p>`
+            },
+            {
+                id: 14,
+                category: 'security',
+                question: 'How do you store tokens on the frontend (Local Storage vs Session Storage)?',
+                answer: `<p><strong>Local Storage:</strong></p>
+                <ul>
+                    <li>Data persists even after browser closes</li>
+                    <li>No expiration time</li>
+                    <li>Accessible from all tabs/windows of same origin</li>
+                    <li><strong>Vulnerable to XSS attacks</strong></li>
+                </ul>
+                <p><strong>Session Storage:</strong></p>
+                <ul>
+                    <li>Data cleared when tab/window closes</li>
+                    <li>Isolated to the specific tab</li>
+                    <li>Still <strong>vulnerable to XSS</strong></li>
+                </ul>
+                <div class="pros-cons">
+                    <div class="cons">
+                        <h4>⚠️ Security Concerns</h4>
+                        <ul>
+                            <li>Both are vulnerable to XSS (JavaScript can access them)</li>
+                            <li><strong>Best Practice:</strong> Store JWT in <code class="code-inline">httpOnly</code> cookies (not accessible via JS)</li>
+                        </ul>
+                    </div>
+                    <div class="pros">
+                        <h4>✓ Best Practice</h4>
+                        <ul>
+                            <li>Use httpOnly, secure, SameSite cookies for tokens</li>
+                            <li>Implement CSRF protection with tokens in cookies</li>
+                        </ul>
+                    </div>
+                </div>
+                <p><strong>Interview Tip:</strong> Never store sensitive tokens in localStorage/sessionStorage—prefer httpOnly cookies.</p>`
+            },
+            {
+                id: 15,
+                category: 'security',
+                question: 'What are XSS and CSRF attacks?',
+                answer: `<p><strong>XSS (Cross-Site Scripting):</strong></p>
+                <ul>
+                    <li>Attacker injects malicious scripts into web pages</li>
+                    <li>Script executes in victim's browser, stealing cookies/tokens</li>
+                    <li><strong>Prevention:</strong> Sanitize user input, use Content Security Policy (CSP), escape HTML, use frameworks that auto-escape (React)</li>
+                </ul>
+                <p><strong>CSRF (Cross-Site Request Forgery):</strong></p>
+                <ul>
+                    <li>Attacker tricks user into performing unwanted actions on a trusted site</li>
+                    <li>Exploits user's authenticated session</li>
+                    <li><strong>Example:</strong> User clicks malicious link that transfers money from their bank</li>
+                    <li><strong>Prevention:</strong> Use CSRF tokens, SameSite cookie attribute, verify origin headers</li>
+                </ul>
+                <div class="pros-cons">
+                    <div class="cons">
+                        <h4>XSS Prevention</h4>
+                        <ul>
+                            <li>Sanitize & validate input</li>
+                            <li>Use httpOnly cookies</li>
+                            <li>Implement CSP headers</li>
+                        </ul>
+                    </div>
+                    <div class="cons">
+                        <h4>CSRF Prevention</h4>
+                        <ul>
+                            <li>CSRF tokens in forms</li>
+                            <li>SameSite cookie attribute</li>
+                            <li>Double-submit cookies</li>
+                        </ul>
+                    </div>
+                </div>`
+            },
+            {
+                id: 16,
+                category: 'core',
+                question: 'How do you debug Node.js applications?',
+                answer: `<p><strong>Debugging Methods:</strong></p>
+                <ul>
+                    <li><strong>console.log:</strong> Quick debugging; not recommended for production</li>
+                    <li><strong>Node.js Debugger:</strong> Run <code class="code-inline">node inspect app.js</code> or use <code class="code-inline">debugger;</code> statement</li>
+                    <li><strong>VS Code Debugger:</strong> Set breakpoints, inspect variables, step through code</li>
+                    <li><strong>Chrome DevTools:</strong> Run <code class="code-inline">node --inspect app.js</code> and open <code class="code-inline">chrome://inspect</code></li>
+                    <li><strong>Logging Libraries:</strong> Winston, Bunyan, Pino for structured logging</li>
+                    <li><strong>Error Monitoring:</strong> Sentry, New Relic, DataDog for production monitoring</li>
+                    <li><strong>Memory Profiling:</strong> Use <code class="code-inline">--inspect</code> with heap snapshots to detect memory leaks</li>
+                </ul>
+                <p><strong>Interview Tip:</strong> Mention using environment-specific logging (verbose in dev, minimal in prod) and centralized logging for microservices.</p>`
+            },
+            {
+                id: 17,
+                category: 'architecture',
+                question: 'What are REST APIs?',
+                answer: `<p><strong>REST (Representational State Transfer)</strong> is an architectural style for building web services that use HTTP methods.</p>
+                <p><strong>Key Principles:</strong></p>
+                <ul>
+                    <li><strong>Stateless:</strong> Each request is independent; no server-side session</li>
+                    <li><strong>Client-Server:</strong> Separation of concerns</li>
+                    <li><strong>Cacheable:</strong> Responses can be cached for performance</li>
+                    <li><strong>Uniform Interface:</strong> Standard HTTP methods (GET, POST, PUT, DELETE)</li>
+                    <li><strong>Resource-based:</strong> URLs represent resources (e.g., <code class="code-inline">/users/123</code>)</li>
+                </ul>
+                <p><strong>HTTP Methods:</strong></p>
+                <ul>
+                    <li><strong>GET:</strong> Retrieve data</li>
+                    <li><strong>POST:</strong> Create new resource</li>
+                    <li><strong>PUT/PATCH:</strong> Update resource</li>
+                    <li><strong>DELETE:</strong> Remove resource</li>
+                </ul>
+                <p><strong>Interview Tip:</strong> Explain that REST is stateless, unlike GraphQL which can be more flexible but complex.</p>`
+            },
+            {
+                id: 18,
+                category: 'architecture',
+                question: 'What are HTTP Status Codes (e.g., 200, etc.)?',
+                answer: `<p><strong>HTTP Status Codes</strong> indicate the result of an HTTP request.</p>
+                <p><strong>Common Status Codes:</strong></p>
+                <ul>
+                    <li><strong>200 OK:</strong> Success</li>
+                    <li><strong>201 Created:</strong> Resource created successfully</li>
+                    <li><strong>204 No Content:</strong> Success but no data to return</li>
+                    <li><strong>400 Bad Request:</strong> Invalid request data</li>
+                    <li><strong>401 Unauthorized:</strong> Authentication required</li>
+                    <li><strong>403 Forbidden:</strong> Authenticated but no permission</li>
+                    <li><strong>404 Not Found:</strong> Resource doesn't exist</li>
+                    <li><strong>500 Internal Server Error:</strong> Server-side error</li>
+                    <li><strong>502 Bad Gateway:</strong> Invalid response from upstream server</li>
+                    <li><strong>503 Service Unavailable:</strong> Server temporarily unavailable</li>
+                </ul>
+                <p><strong>Categories:</strong> 2xx (Success), 3xx (Redirect), 4xx (Client Error), 5xx (Server Error)</p>`
+            },
+            {
+                id: 19,
+                category: 'architecture',
+                question: 'Which status code should be used when a task is pending or response is not ready yet?',
+                answer: `<p><strong>Best Options:</strong></p>
+                <ul>
+                    <li><strong>202 Accepted:</strong> Request accepted but processing not complete</li>
+                    <li>Indicates async operation in progress</li>
+                    <li>Server should return location/status URL for polling</li>
+                </ul>
+                <p><strong>Alternative Approaches:</strong></p>
+                <ul>
+                    <li><strong>Long Polling:</strong> Keep connection open until ready</li>
+                    <li><strong>WebSockets:</strong> Real-time bidirectional communication</li>
+                    <li><strong>Server-Sent Events (SSE):</strong> Server pushes updates to client</li>
+                </ul>
+                <p><strong>Example Response:</strong></p>
+                <p>HTTP 202 with response body: <code class="code-inline">{"status": "pending", "jobId": "123", "checkUrl": "/jobs/123"}</code></p>
+                <p><strong>Interview Tip:</strong> Mention 202 is ideal for async operations like batch processing, report generation, or video encoding.</p>`
+            },
+            {
+                id: 20,
+                category: 'architecture',
+                question: 'What are Microservices?',
+                answer: `<p><strong>Microservices</strong> is an architectural pattern where an application is built as a collection of small, independent services.</p>
+                <p><strong>Characteristics:</strong></p>
+                <ul>
+                    <li>Each service handles a specific business function</li>
+                    <li>Services are independently deployable and scalable</li>
+                    <li>Communicate via APIs (REST, gRPC, message queues)</li>
+                    <li>Can use different tech stacks per service</li>
+                    <li>Fault isolation—failure in one service doesn't crash the whole system</li>
+                </ul>
+                <div class="pros-cons">
+                    <div class="pros">
+                        <h4>✓ Pros</h4>
+                        <ul>
+                            <li>Scalability (scale services independently)</li>
+                            <li>Flexibility (different technologies)</li>
+                            <li>Faster deployment cycles</li>
+                            <li>Team autonomy</li>
+                        </ul>
+                    </div>
+                    <div class="cons">
+                        <h4>✗ Cons</h4>
+                        <ul>
+                            <li>Increased complexity (distributed systems)</li>
+                            <li>Network latency between services</li>
+                            <li>Harder to debug and monitor</li>
+                            <li>Data consistency challenges</li>
+                        </ul>
+                    </div>
+                </div>`
+            },
+            {
+                id: 21,
+                category: 'architecture',
+                question: 'What are the drawbacks of Microservices?',
+                answer: `<p><strong>Key Challenges:</strong></p>
+                <ul>
+                    <li><strong>Complexity:</strong> Managing multiple services, deployments, and monitoring</li>
+                    <li><strong>Network Latency:</strong> Inter-service communication adds overhead</li>
+                    <li><strong>Data Consistency:</strong> Distributed transactions are hard; eventual consistency required</li>
+                    <li><strong>Testing:</strong> Integration testing is complex across services</li>
+                    <li><strong>Deployment:</strong> Requires robust CI/CD, container orchestration (Kubernetes)</li>
+                    <li><strong>Monitoring & Debugging:</strong> Distributed tracing needed (Jaeger, Zipkin)</li>
+                    <li><strong>Versioning:</strong> API versioning and backward compatibility challenges</li>
+                    <li><strong>Overhead:</strong> Each service needs its own database, logging, monitoring</li>
+                </ul>
+                <p><strong>Interview Tip:</strong> Mention that microservices are NOT always the answer—monoliths work well for smaller teams/projects.</p>`
+            },
+            {
+                id: 22,
+                category: 'architecture',
+                question: 'How do microservices communicate with each other?',
+                answer: `<p><strong>Communication Patterns:</strong></p>
+                <ul>
+                    <li><strong>Synchronous:</strong>
+                        <ul>
+                            <li><strong>REST APIs:</strong> HTTP-based, simple, widely used</li>
+                            <li><strong>gRPC:</strong> High-performance, uses Protocol Buffers, supports streaming</li>
+                        </ul>
+                    </li>
+                    <li><strong>Asynchronous:</strong>
+                        <ul>
+                            <li><strong>Message Queues:</strong> RabbitMQ, AWS SQS—decouple services</li>
+                            <li><strong>Event Streaming:</strong> Kafka, AWS Kinesis—publish/subscribe pattern</li>
+                            <li><strong>Message Brokers:</strong> Redis Pub/Sub, NATS</li>
+                        </ul>
+                    </li>
+                </ul>
+                <p><strong>Service Discovery:</strong> Consul, Eureka, Kubernetes DNS—services find each other dynamically</p>
+                <p><strong>API Gateway:</strong> Single entry point (Kong, AWS API Gateway) for routing, authentication, rate limiting</p>
+                <p><strong>Interview Tip:</strong> Use sync for real-time needs (user requests); async for background tasks (emails, notifications).</p>`
+            },
+            {
+                id: 23,
+                category: 'database',
+                question: 'What is MSSQL and MongoDB?',
+                answer: `<p><strong>MSSQL (Microsoft SQL Server):</strong></p>
+                <ul>
+                    <li>Relational database (SQL-based)</li>
+                    <li>Structured data with predefined schemas</li>
+                    <li>ACID-compliant transactions</li>
+                    <li>Uses tables, rows, columns</li>
+                    <li><strong>Use case:</strong> Banking, ERP, structured data</li>
+                </ul>
+                <p><strong>MongoDB:</strong></p>
+                <ul>
+                    <li>NoSQL document database</li>
+                    <li>Stores data as JSON-like documents (BSON)</li>
+                    <li>Schema-less (flexible structure)</li>
+                    <li>Horizontally scalable (sharding)</li>
+                    <li><strong>Use case:</strong> Real-time analytics, IoT, content management</li>
+                </ul>
+                <div class="pros-cons">
+                    <div class="pros">
+                        <h4>MSSQL</h4>
+                        <ul>
+                            <li>Strong consistency</li>
+                            <li>Complex joins & transactions</li>
+                            <li>Mature ecosystem</li>
+                        </ul>
+                    </div>
+                    <div class="pros">
+                        <h4>MongoDB</h4>
+                        <ul>
+                            <li>Flexible schema</li>
+                            <li>High scalability</li>
+                            <li>Fast for unstructured data</li>
+                        </ul>
+                    </div>
+                </div>`
+            },
+            {
+                id: 24,
+                category: 'database',
+                question: 'What is Vertical and Horizontal Scaling?',
+                answer: `<p><strong>Vertical Scaling (Scale Up):</strong></p>
+                <ul>
+                    <li>Add more power to existing server (CPU, RAM, storage)</li>
+                    <li>Single machine becomes more powerful</li>
+                    <li><strong>Pros:</strong> Simple, no code changes, strong consistency</li>
+                    <li><strong>Cons:</strong> Hardware limits, single point of failure, expensive</li>
+                </ul>
+                <p><strong>Horizontal Scaling (Scale Out):</strong></p>
+                <ul>
+                    <li>Add more servers/machines to distribute load</li>
+                    <li>Multiple machines work together</li>
+                    <li><strong>Pros:</strong> No hardware limit, fault tolerance, cost-effective</li>
+                    <li><strong>Cons:</strong> Complex (load balancing, data consistency), eventual consistency</li>
+                </ul>
+                <p><strong>Interview Example:</strong></p>
+                <ul>
+                    <li><strong>Vertical:</strong> Upgrade from 8GB RAM to 32GB RAM</li>
+                    <li><strong>Horizontal:</strong> Add 3 more servers behind a load balancer</li>
+                </ul>
+                <p><strong>Interview Tip:</strong> Modern cloud apps prefer horizontal scaling for flexibility and resilience.</p>`
+            },
+            {
+                id: 25,
+                category: 'database',
+                question: 'What is Sharding?',
+                answer: `<p><strong>Sharding</strong> is a database partitioning technique where data is split across multiple databases/servers (shards).</p>
+                <p><strong>How it works:</strong></p>
+                <ul>
+                    <li>Each shard contains a subset of the total data</li>
+                    <li>Data distributed based on a <strong>shard key</strong> (e.g., user ID, geographic region)</li>
+                    <li>Queries routed to the appropriate shard</li>
+                </ul>
+                <p><strong>Types:</strong></p>
+                <ul>
+                    <li><strong>Range-based:</strong> Data divided by ranges (e.g., users A-M in shard1, N-Z in shard2)</li>
+                    <li><strong>Hash-based:</strong> Hash function determines shard (e.g., <code class="code-inline">hash(userId) % numShards</code>)</li>
+                    <li><strong>Geographic:</strong> Data based on location (US users → US shard)</li>
+                </ul>
+                <div class="pros-cons">
+                    <div class="pros">
+                        <h4>✓ Benefits</h4>
+                        <ul>
+                            <li>Horizontal scalability</li>
+                            <li>Better performance (smaller datasets per shard)</li>
+                            <li>Reduced latency (geo-distributed)</li>
+                        </ul>
+                    </div>
+                    <div class="cons">
+                        <h4>✗ Challenges</h4>
+                        <ul>
+                            <li>Complex queries (joins across shards)</li>
+                            <li>Rebalancing when adding shards</li>
+                            <li>Hotspots if shard key is unbalanced</li>
+                        </ul>
+                    </div>
+                </div>`
+            },
+            {
+                id: 26,
+                category: 'database',
+                question: 'How do you shard a database?',
+                answer: `<p><strong>Sharding Process:</strong></p>
+                <ul>
+                    <li><strong>1. Choose Shard Key:</strong> Select a field that evenly distributes data (e.g., userId, orderId)</li>
+                    <li><strong>2. Define Sharding Strategy:</strong>
+                        <ul>
+                            <li><strong>Range-based:</strong> User IDs 1-1M → Shard1, 1M-2M → Shard2</li>
+                            <li><strong>Hash-based:</strong> <code class="code-inline">hash(userId) % numShards</code></li>
+                            <li><strong>Directory-based:</strong> Lookup table maps keys to shards</li>
+                        </ul>
+                    </li>
+                    <li><strong>3. Create Shards:</strong> Set up multiple database instances</li>
+                    <li><strong>4. Route Queries:</strong> Application logic or router directs queries to correct shard</li>
+                    <li><strong>5. Handle Cross-Shard Operations:</strong> Aggregate results from multiple shards if needed</li>
+                </ul>
+                <p><strong>MongoDB Sharding:</strong> Automatic via shard key; uses config servers and mongos routers</p>
+                <p><strong>Interview Tip:</strong> Mention that choosing the right shard key is critical—bad key causes hotspots (uneven load).</p>`
+            },
+            {
+                id: 27,
+                category: 'database',
+                question: 'What is ACID?',
+                answer: `<p><strong>ACID</strong> properties ensure reliable database transactions.</p>
+                <ul>
+                    <li><strong>Atomicity:</strong> Transaction is all-or-nothing; if any part fails, entire transaction rolls back</li>
+                    <li><strong>Consistency:</strong> Database remains in valid state before and after transaction; enforces constraints</li>
+                    <li><strong>Isolation:</strong> Concurrent transactions don't interfere; each sees a consistent snapshot</li>
+                    <li><strong>Durability:</strong> Once committed, changes are permanent (even after crashes)</li>
+                </ul>
+                <p><strong>Example:</strong> Bank transfer (deduct from A, add to B)—if deduction succeeds but addition fails, atomicity ensures rollback.</p>
+                <p><strong>ACID vs BASE:</strong></p>
+                <ul>
+                    <li><strong>ACID:</strong> SQL databases (strong consistency)</li>
+                    <li><strong>BASE:</strong> NoSQL (eventual consistency, high availability)</li>
+                </ul>
+                <p><strong>Interview Tip:</strong> ACID is essential for financial systems, e-commerce—anywhere data integrity is critical.</p>`
+            },
+            {
+                id: 28,
+                category: 'database',
+                question: 'What are Transactions?',
+                answer: `<p><strong>Transactions</strong> are a sequence of database operations treated as a single unit of work.</p>
+                <p><strong>Key Concepts:</strong></p>
+                <ul>
+                    <li>Either all operations succeed (commit) or all fail (rollback)</li>
+                    <li>Ensures ACID properties</li>
+                    <li>Prevents partial updates that leave data inconsistent</li>
+                </ul>
+                <p><strong>Example in SQL:</strong></p>
+                <ul>
+                    <li>BEGIN TRANSACTION</li>
+                    <li>UPDATE accounts SET balance = balance - 100 WHERE id = 1;</li>
+                    <li>UPDATE accounts SET balance = balance + 100 WHERE id = 2;</li>
+                    <li>COMMIT; (or ROLLBACK if error)</li>
+                </ul>
+                <p><strong>In MongoDB:</strong> Multi-document transactions supported (since v4.0)</p>
+                <p><strong>Interview Tip:</strong> Explain that transactions prevent race conditions and ensure data integrity in critical operations.</p>`
+            },
+            {
+                id: 29,
+                category: 'database',
+                question: 'What are indexing types in MongoDB?',
+                answer: `<p><strong>Indexes</strong> improve query performance by creating efficient data structures for lookups.</p>
+                <p><strong>MongoDB Index Types:</strong></p>
+                <ul>
+                    <li><strong>Single Field Index:</strong> Index on one field (e.g., <code class="code-inline">userId</code>)</li>
+                    <li><strong>Compound Index:</strong> Index on multiple fields (e.g., <code class="code-inline">{userId: 1, createdAt: -1}</code>)</li>
+                    <li><strong>Multikey Index:</strong> Index on array fields</li>
+                    <li><strong>Text Index:</strong> For full-text search on string content</li>
+                    <li><strong>Geospatial Index:</strong> For location-based queries (2d, 2dsphere)</li>
+                    <li><strong>Hashed Index:</strong> For hash-based sharding</li>
+                    <li><strong>Unique Index:</strong> Ensures field values are unique</li>
+                    <li><strong>TTL Index:</strong> Automatically delete documents after expiration time</li>
+                </ul>
+                <p><strong>Interview Tip:</strong> Mention that over-indexing slows down writes; balance read vs write performance.</p>`
+            },
+            {
+                id: 30,
+                category: 'core',
+                question: 'What is spawn and fork?',
+                answer: `<p>Both are methods in Node.js <code class="code-inline">child_process</code> module to create child processes.</p>
+                <p><strong>spawn:</strong></p>
+                <ul>
+                    <li>Launches a new process with a given command</li>
+                    <li>Streams data (stdout, stderr) in real-time</li>
+                    <li>More memory-efficient for large outputs</li>
+                    <li><strong>Example:</strong> <code class="code-inline">spawn('ls', ['-lh', '/usr'])</code></li>
+                    <li><strong>Use case:</strong> Running shell commands, long-running processes</li>
+                </ul>
+                <p><strong>fork:</strong></p>
+                <ul>
+                    <li>Special case of spawn—creates a new Node.js process</li>
+                    <li>Runs a separate JavaScript file</li>
+                    <li>Built-in IPC (Inter-Process Communication) channel</li>
+                    <li><strong>Example:</strong> <code class="code-inline">fork('./worker.js')</code></li>
+                    <li><strong>Use case:</strong> CPU-intensive tasks, parallel processing in Node.js</li>
+                </ul>
+                <p><strong>Interview Tip:</strong> Use fork for Node.js child processes with IPC; spawn for system commands or non-Node processes.</p>`
+            }
+        ];
+
+        let filteredQuestions = questions;
+
+        // Render questions with stagger animation
+        function renderQuestions(questionsToRender) {
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+            
+            questionsToRender.forEach((q, index) => {
+                const card = document.createElement('div');
+                card.className = 'question-card';
+                card.style.animationDelay = `${index * 0.05}s`;
+                card.dataset.category = q.category;
+                card.innerHTML = `
+                    <div class="question-header">
+                        <span class="question-number">Q${q.id}</span>
+                        <h3 class="question-text">${q.question}</h3>
+                        <span class="expand-icon">▼</span>
+                    </div>
+                    <div class="answer">
+                        <div class="answer-content">
+                            ${q.answer}
+                        </div>
+                    </div>
+                `;
+                
+                card.addEventListener('click', () => {
+                    const wasActive = card.classList.contains('active');
+                    document.querySelectorAll('.question-card').forEach(c => c.classList.remove('active'));
+                    if (!wasActive) {
+                        card.classList.add('active');
+                    }
+                });
+                
+                container.appendChild(card);
+            });
+        }
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            filteredQuestions = questions.filter(q => 
+                q.question.toLowerCase().includes(searchTerm) || 
+                q.answer.toLowerCase().includes(searchTerm)
+            );
+            renderQuestions(filteredQuestions);
+        });
+
+        // Filter functionality
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                const category = btn.dataset.category;
+                if (category === 'all') {
+                    filteredQuestions = questions;
+                } else {
+                    filteredQuestions = questions.filter(q => q.category === category);
+                }
+                renderQuestions(filteredQuestions);
+            });
+        });
+
+        // Scroll to top
+        const scrollTopBtn = document.getElementById('scrollTop');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                scrollTopBtn.classList.add('visible');
+            } else {
+                scrollTopBtn.classList.remove('visible');
+            }
+        });
+
+        scrollTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Initial render
+        renderQuestions(questions);
+    </script>
+</body>
+</html>
