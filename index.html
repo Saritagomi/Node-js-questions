@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Node.js Interview Mastery Guide</title>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Orbitron:wght@700;900&display=swap"
+        rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -40,7 +43,7 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            background: 
+            background:
                 radial-gradient(circle at 20% 50%, rgba(0, 255, 247, 0.1) 0%, transparent 50%),
                 radial-gradient(circle at 80% 80%, rgba(255, 42, 109, 0.1) 0%, transparent 50%),
                 radial-gradient(circle at 40% 20%, rgba(255, 215, 0, 0.05) 0%, transparent 50%);
@@ -48,8 +51,15 @@
         }
 
         @keyframes bgShift {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(50px, 30px) scale(1.1); }
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            50% {
+                transform: translate(50px, 30px) scale(1.1);
+            }
         }
 
         /* Grid Pattern Overlay */
@@ -60,7 +70,7 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            background-image: 
+            background-image:
                 linear-gradient(rgba(0, 255, 247, 0.03) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(0, 255, 247, 0.03) 1px, transparent 1px);
             background-size: 50px 50px;
@@ -68,27 +78,46 @@
         }
 
         @keyframes gridMove {
-            0% { background-position: 0 0; }
-            100% { background-position: 50px 50px; }
+            0% {
+                background-position: 0 0;
+            }
+
+            100% {
+                background-position: 50px 50px;
+            }
         }
 
-        /* Watermark */
         .watermark {
             position: fixed;
             bottom: 20px;
             right: 30px;
-            font-size: 0.75rem;
-            /* color: rgba(0, 255, 247, 0.2); */
-            font-weight: 600;
+            font-size: 0.8rem;
+            color: rgba(0, 255, 247, 0.7);
+            /* increased visibility */
+            font-weight: 700;
             letter-spacing: 2px;
             z-index: 1000;
             text-transform: uppercase;
-            animation: pulse 3s ease-in-out infinite;
+            animation: pulse 2.5s ease-in-out infinite;
+            text-shadow: 0 0 8px rgba(0, 255, 247, 0.6);
+            /* glow effect */
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 0.2; }
-            50% { opacity: 0.4; }
+            0% {
+                opacity: 0.4;
+                text-shadow: 0 0 5px rgba(0, 255, 247, 0.3);
+            }
+
+            50% {
+                opacity: 1;
+                text-shadow: 0 0 20px rgba(101, 255, 250, 0.9);
+            }
+
+            100% {
+                opacity: 0.4;
+                text-shadow: 0 0 5px rgba(0, 255, 247, 0.3);
+            }
         }
 
         /* Header */
@@ -112,8 +141,15 @@
         }
 
         @keyframes titleGlow {
-            0%, 100% { filter: brightness(1) drop-shadow(0 0 20px rgba(0, 255, 247, 0.3)); }
-            50% { filter: brightness(1.2) drop-shadow(0 0 40px rgba(255, 42, 109, 0.4)); }
+
+            0%,
+            100% {
+                filter: brightness(1) drop-shadow(0 0 20px rgba(0, 255, 247, 0.3));
+            }
+
+            50% {
+                filter: brightness(1.2) drop-shadow(0 0 40px rgba(255, 42, 109, 0.4));
+            }
         }
 
         .subtitle {
@@ -181,6 +217,7 @@
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -311,7 +348,8 @@
             margin-top: 1rem;
         }
 
-        .pros, .cons {
+        .pros,
+        .cons {
             background: rgba(255, 255, 255, 0.03);
             padding: 1rem;
             border-radius: 10px;
@@ -326,7 +364,8 @@
             border-color: rgba(255, 42, 109, 0.3);
         }
 
-        .pros h4, .cons h4 {
+        .pros h4,
+        .cons h4 {
             font-size: 0.95rem;
             margin-bottom: 0.8rem;
             font-weight: 700;
@@ -363,7 +402,8 @@
             backdrop-filter: blur(10px);
         }
 
-        .filter-btn:hover, .filter-btn.active {
+        .filter-btn:hover,
+        .filter-btn.active {
             background: linear-gradient(135deg, var(--accent-cyan), var(--accent-pink));
             color: var(--bg-primary);
             border-color: transparent;
@@ -457,11 +497,17 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="bg-animation"></div>
     <div class="grid-overlay"></div>
@@ -1188,7 +1234,7 @@
         function renderQuestions(questionsToRender) {
             const container = document.getElementById('questionsContainer');
             container.innerHTML = '';
-            
+
             questionsToRender.forEach((q, index) => {
                 const card = document.createElement('div');
                 card.className = 'question-card';
@@ -1206,7 +1252,7 @@
                         </div>
                     </div>
                 `;
-                
+
                 card.addEventListener('click', () => {
                     const wasActive = card.classList.contains('active');
                     document.querySelectorAll('.question-card').forEach(c => c.classList.remove('active'));
@@ -1214,7 +1260,7 @@
                         card.classList.add('active');
                     }
                 });
-                
+
                 container.appendChild(card);
             });
         }
@@ -1222,8 +1268,8 @@
         // Search functionality
         document.getElementById('searchInput').addEventListener('input', (e) => {
             const searchTerm = e.target.value.toLowerCase();
-            filteredQuestions = questions.filter(q => 
-                q.question.toLowerCase().includes(searchTerm) || 
+            filteredQuestions = questions.filter(q =>
+                q.question.toLowerCase().includes(searchTerm) ||
                 q.answer.toLowerCase().includes(searchTerm)
             );
             renderQuestions(filteredQuestions);
@@ -1234,7 +1280,7 @@
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                
+
                 const category = btn.dataset.category;
                 if (category === 'all') {
                     filteredQuestions = questions;
@@ -1263,4 +1309,5 @@
         renderQuestions(questions);
     </script>
 </body>
+
 </html>
